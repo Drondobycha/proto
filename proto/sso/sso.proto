@@ -5,8 +5,21 @@ package auth;
 option go_package = "dobycha.sso.v1;ssov1";
 
 service Auth {
-    rpc Register (RegisterRequest) returns (RegisterResponse);
-    rpc Login (LoginRequest) returns (LoginResponse);
+  // Register registers a new user.
+  rpc Register (RegisterRequest) returns (RegisterResponse);
+  // Login logs in a user and returns an auth token.
+  rpc Login (LoginRequest) returns (LoginResponse);
+  // IsAdmin checks whether a user is an admin.
+  rpc IsAdmin (IsAdminRequest) returns (IsAdminResponse);
+  rpc Logout (LogoutRequest) returns (LogoutResponse);
+}
+
+message IsAdminRequest {
+  int64 user_id = 1; // User ID to validate.
+}
+
+message IsAdminResponse {
+  bool is_admin = 1;  // Indicates whether the user is an admin.
 }
 
 message RegisterRequest {
@@ -26,4 +39,12 @@ message LoginRequest {
 
 message LoginResponse {
   string token = 1; // Auth token of the logged in user.
+}
+
+message LogoutRequest {
+  string token = 1; // Auth token of the user to logout.
+}
+
+message LogoutResponse {
+  bool success = 1; // Indicates whether the logout was successful.
 }
