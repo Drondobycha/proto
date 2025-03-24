@@ -1,4 +1,4 @@
-module proto
+module github.com/Drondobycha/proto
 
 go 1.24.1
 
