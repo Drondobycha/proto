@@ -5,46 +5,135 @@ package auth;
 option go_package = "dobycha.sso.v1;ssov1";
 
 service Auth {
-  // Register registers a new user.
+  // Register регистрирует нового пользователя.
   rpc Register (RegisterRequest) returns (RegisterResponse);
-  // Login logs in a user and returns an auth token.
+  // Login выполняет вход пользователя и возвращает auth token.
   rpc Login (LoginRequest) returns (LoginResponse);
-  // IsAdmin checks whether a user is an admin.
+  // IsAdmin проверяет, является ли пользователь администратором.
   rpc IsAdmin (IsAdminRequest) returns (IsAdminResponse);
+  // Logout выполняет выход пользователя.
   rpc Logout (LogoutRequest) returns (LogoutResponse);
 }
 
+service Permissions {
+  // AddPermission добавляет новое разрешение пользователю.
+  rpc AddPermission (AddPermissionRequest) returns (AddPermissionResponse);
+  // RemovePermission удаляет разрешение у пользователя.
+  rpc RemovePermission (RemovePermissionRequest) returns (RemovePermissionResponse);
+  // CheckPermission проверяет наличие разрешения у пользователя.
+  rpc CheckPermission (CheckPermissionRequest) returns (CheckPermissionResponse);
+  // ListPermissions возвращает все разрешения пользователя.
+  rpc ListPermissions (ListPermissionsRequest) returns (ListPermissionsResponse);
+}
+
+service UserInfo {
+  // GetUserInfo возвращает информацию о пользователе.
+  rpc GetUserInfo (GetUserInfoRequest) returns (GetUserInfoResponse);
+  // UpdateUserInfo обновляет информацию о пользователе.
+  rpc UpdateUserInfo (UpdateUserInfoRequest) returns (UpdateUserInfoResponse);
+  // DeleteUser удаляет аккаунт пользователя.
+  rpc DeleteUser (DeleteUserRequest) returns (DeleteUserResponse);
+}
+
+// Сообщения для сервиса Auth
 message IsAdminRequest {
-  int64 user_id = 1; // User ID to validate.
+  int64 user_id = 1; // ID пользователя для проверки.
 }
 
 message IsAdminResponse {
-  bool is_admin = 1;  // Indicates whether the user is an admin.
+  bool is_admin = 1;  // Указывает, является ли пользователь администратором.
 }
 
 message RegisterRequest {
-  string email = 1; // Email of the user to register.
-  string password = 2; // Password of the user to register.
+  string email = 1; // Email пользователя для регистрации.
+  string password = 2; // Пароль пользователя для регистрации.
 }
 
 message RegisterResponse {
-  int64 user_id = 1; // User ID of the registered user.
+  int64 user_id = 1; // ID зарегистрированного пользователя.
 }
 
 message LoginRequest {
-  string email = 1; // Email of the user to login.
-  string password = 2; // Password of the user to login.
-  int32 app_id = 3; // ID of the app to login to.
+  string email = 1; // Email пользователя для входа.
+  string password = 2; // Пароль пользователя для входа.
+  int32 app_id = 3; // ID приложения для входа.
 }
 
 message LoginResponse {
-  string token = 1; // Auth token of the logged in user.
+  string token = 1; // Auth token вошедшего пользователя.
 }
 
 message LogoutRequest {
-  string token = 1; // Auth token of the user to logout.
+  string token = 1; // Auth token пользователя для выхода.
 }
 
 message LogoutResponse {
-  bool success = 1; // Indicates whether the logout was successful.
+  bool success = 1; // Указывает, был ли выход успешным.
+}
+
+// Сообщения для сервиса Permissions
+message AddPermissionRequest {
+  int64 user_id = 1; // ID пользователя для добавления разрешения.
+  string permission = 2; // Разрешение для добавления (например, "read:documents", "write:reports").
+}
+
+message AddPermissionResponse {
+  bool success = 1; // Указывает, было ли разрешение успешно добавлено.
+}
+
+message RemovePermissionRequest {
+  int64 user_id = 1; // ID пользователя для удаления разрешения.
+  string permission = 2; // Разрешение для удаления.
+}
+
+message RemovePermissionResponse {
+  bool success = 1; // Указывает, было ли разрешение успешно удалено.
+}
+
+message CheckPermissionRequest {
+  int64 user_id = 1; // ID пользователя для проверки.
+  string permission = 2; // Разрешение для проверки.
+}
+
+message CheckPermissionResponse {
+  bool has_permission = 1; // Указывает, есть ли у пользователя данное разрешение.
+}
+
+message ListPermissionsRequest {
+  int64 user_id = 1; // ID пользователя для получения списка разрешений.
+}
+
+message ListPermissionsResponse {
+  repeated string permissions = 1; // Список разрешений пользователя.
+}
+
+// Сообщения для сервиса UserInfo
+message GetUserInfoRequest {
+  int64 user_id = 1; // ID пользователя для получения информации.
+}
+
+message GetUserInfoResponse {
+  int64 user_id = 1; // ID пользователя.
+  string email = 2; // Email пользователя.
+  string name = 3; // Полное имя пользователя.
+  bool email_verified = 4; // Указывает, подтвержден ли email.
+  string created_at = 5; // Временная метка создания пользователя.
+}
+
+message UpdateUserInfoRequest {
+  int64 user_id = 1; // ID пользователя для обновления.
+  optional string email = 2; // Новый email (опционально).
+  optional string name = 3; // Новое полное имя (опционально).
+}
+
+message UpdateUserInfoResponse {
+  bool success = 1; // Указывает, было ли обновление успешным.
+}
+
+message DeleteUserRequest {
+  int64 user_id = 1; // ID пользователя для удаления.
+}
+
+message DeleteUserResponse {
+  bool success = 1; // Указывает, было ли удаление успешным.
 }

@@ -29,12 +29,13 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AuthClient interface {
-	// Register registers a new user.
+	// Register регистрирует нового пользователя.
 	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
-	// Login logs in a user and returns an auth token.
+	// Login выполняет вход пользователя и возвращает auth token.
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
-	// IsAdmin checks whether a user is an admin.
+	// IsAdmin проверяет, является ли пользователь администратором.
 	IsAdmin(ctx context.Context, in *IsAdminRequest, opts ...grpc.CallOption) (*IsAdminResponse, error)
+	// Logout выполняет выход пользователя.
 	Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*LogoutResponse, error)
 }
 
@@ -90,12 +91,13 @@ func (c *authClient) Logout(ctx context.Context, in *LogoutRequest, opts ...grpc
 // All implementations must embed UnimplementedAuthServer
 // for forward compatibility.
 type AuthServer interface {
-	// Register registers a new user.
+	// Register регистрирует нового пользователя.
 	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
-	// Login logs in a user and returns an auth token.
+	// Login выполняет вход пользователя и возвращает auth token.
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
-	// IsAdmin checks whether a user is an admin.
+	// IsAdmin проверяет, является ли пользователь администратором.
 	IsAdmin(context.Context, *IsAdminRequest) (*IsAdminResponse, error)
+	// Logout выполняет выход пользователя.
 	Logout(context.Context, *LogoutRequest) (*LogoutResponse, error)
 	mustEmbedUnimplementedAuthServer()
 }
@@ -234,6 +236,414 @@ var Auth_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Logout",
 			Handler:    _Auth_Logout_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "sso/sso.proto",
+}
+
+const (
+	Permissions_AddPermission_FullMethodName    = "/auth.Permissions/AddPermission"
+	Permissions_RemovePermission_FullMethodName = "/auth.Permissions/RemovePermission"
+	Permissions_CheckPermission_FullMethodName  = "/auth.Permissions/CheckPermission"
+	Permissions_ListPermissions_FullMethodName  = "/auth.Permissions/ListPermissions"
+)
+
+// PermissionsClient is the client API for Permissions service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type PermissionsClient interface {
+	// AddPermission добавляет новое разрешение пользователю.
+	AddPermission(ctx context.Context, in *AddPermissionRequest, opts ...grpc.CallOption) (*AddPermissionResponse, error)
+	// RemovePermission удаляет разрешение у пользователя.
+	RemovePermission(ctx context.Context, in *RemovePermissionRequest, opts ...grpc.CallOption) (*RemovePermissionResponse, error)
+	// CheckPermission проверяет наличие разрешения у пользователя.
+	CheckPermission(ctx context.Context, in *CheckPermissionRequest, opts ...grpc.CallOption) (*CheckPermissionResponse, error)
+	// ListPermissions возвращает все разрешения пользователя.
+	ListPermissions(ctx context.Context, in *ListPermissionsRequest, opts ...grpc.CallOption) (*ListPermissionsResponse, error)
+}
+
+type permissionsClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewPermissionsClient(cc grpc.ClientConnInterface) PermissionsClient {
+	return &permissionsClient{cc}
+}
+
+func (c *permissionsClient) AddPermission(ctx context.Context, in *AddPermissionRequest, opts ...grpc.CallOption) (*AddPermissionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AddPermissionResponse)
+	err := c.cc.Invoke(ctx, Permissions_AddPermission_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *permissionsClient) RemovePermission(ctx context.Context, in *RemovePermissionRequest, opts ...grpc.CallOption) (*RemovePermissionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RemovePermissionResponse)
+	err := c.cc.Invoke(ctx, Permissions_RemovePermission_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *permissionsClient) CheckPermission(ctx context.Context, in *CheckPermissionRequest, opts ...grpc.CallOption) (*CheckPermissionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CheckPermissionResponse)
+	err := c.cc.Invoke(ctx, Permissions_CheckPermission_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *permissionsClient) ListPermissions(ctx context.Context, in *ListPermissionsRequest, opts ...grpc.CallOption) (*ListPermissionsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListPermissionsResponse)
+	err := c.cc.Invoke(ctx, Permissions_ListPermissions_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// PermissionsServer is the server API for Permissions service.
+// All implementations must embed UnimplementedPermissionsServer
+// for forward compatibility.
+type PermissionsServer interface {
+	// AddPermission добавляет новое разрешение пользователю.
+	AddPermission(context.Context, *AddPermissionRequest) (*AddPermissionResponse, error)
+	// RemovePermission удаляет разрешение у пользователя.
+	RemovePermission(context.Context, *RemovePermissionRequest) (*RemovePermissionResponse, error)
+	// CheckPermission проверяет наличие разрешения у пользователя.
+	CheckPermission(context.Context, *CheckPermissionRequest) (*CheckPermissionResponse, error)
+	// ListPermissions возвращает все разрешения пользователя.
+	ListPermissions(context.Context, *ListPermissionsRequest) (*ListPermissionsResponse, error)
+	mustEmbedUnimplementedPermissionsServer()
+}
+
+// UnimplementedPermissionsServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedPermissionsServer struct{}
+
+func (UnimplementedPermissionsServer) AddPermission(context.Context, *AddPermissionRequest) (*AddPermissionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddPermission not implemented")
+}
+func (UnimplementedPermissionsServer) RemovePermission(context.Context, *RemovePermissionRequest) (*RemovePermissionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemovePermission not implemented")
+}
+func (UnimplementedPermissionsServer) CheckPermission(context.Context, *CheckPermissionRequest) (*CheckPermissionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckPermission not implemented")
+}
+func (UnimplementedPermissionsServer) ListPermissions(context.Context, *ListPermissionsRequest) (*ListPermissionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListPermissions not implemented")
+}
+func (UnimplementedPermissionsServer) mustEmbedUnimplementedPermissionsServer() {}
+func (UnimplementedPermissionsServer) testEmbeddedByValue()                     {}
+
+// UnsafePermissionsServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to PermissionsServer will
+// result in compilation errors.
+type UnsafePermissionsServer interface {
+	mustEmbedUnimplementedPermissionsServer()
+}
+
+func RegisterPermissionsServer(s grpc.ServiceRegistrar, srv PermissionsServer) {
+	// If the following call pancis, it indicates UnimplementedPermissionsServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&Permissions_ServiceDesc, srv)
+}
+
+func _Permissions_AddPermission_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddPermissionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PermissionsServer).AddPermission(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Permissions_AddPermission_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PermissionsServer).AddPermission(ctx, req.(*AddPermissionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Permissions_RemovePermission_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RemovePermissionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PermissionsServer).RemovePermission(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Permissions_RemovePermission_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PermissionsServer).RemovePermission(ctx, req.(*RemovePermissionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Permissions_CheckPermission_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CheckPermissionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PermissionsServer).CheckPermission(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Permissions_CheckPermission_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PermissionsServer).CheckPermission(ctx, req.(*CheckPermissionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Permissions_ListPermissions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListPermissionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PermissionsServer).ListPermissions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Permissions_ListPermissions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PermissionsServer).ListPermissions(ctx, req.(*ListPermissionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// Permissions_ServiceDesc is the grpc.ServiceDesc for Permissions service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var Permissions_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "auth.Permissions",
+	HandlerType: (*PermissionsServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "AddPermission",
+			Handler:    _Permissions_AddPermission_Handler,
+		},
+		{
+			MethodName: "RemovePermission",
+			Handler:    _Permissions_RemovePermission_Handler,
+		},
+		{
+			MethodName: "CheckPermission",
+			Handler:    _Permissions_CheckPermission_Handler,
+		},
+		{
+			MethodName: "ListPermissions",
+			Handler:    _Permissions_ListPermissions_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "sso/sso.proto",
+}
+
+const (
+	UserInfo_GetUserInfo_FullMethodName    = "/auth.UserInfo/GetUserInfo"
+	UserInfo_UpdateUserInfo_FullMethodName = "/auth.UserInfo/UpdateUserInfo"
+	UserInfo_DeleteUser_FullMethodName     = "/auth.UserInfo/DeleteUser"
+)
+
+// UserInfoClient is the client API for UserInfo service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type UserInfoClient interface {
+	// GetUserInfo возвращает информацию о пользователе.
+	GetUserInfo(ctx context.Context, in *GetUserInfoRequest, opts ...grpc.CallOption) (*GetUserInfoResponse, error)
+	// UpdateUserInfo обновляет информацию о пользователе.
+	UpdateUserInfo(ctx context.Context, in *UpdateUserInfoRequest, opts ...grpc.CallOption) (*UpdateUserInfoResponse, error)
+	// DeleteUser удаляет аккаунт пользователя.
+	DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*DeleteUserResponse, error)
+}
+
+type userInfoClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewUserInfoClient(cc grpc.ClientConnInterface) UserInfoClient {
+	return &userInfoClient{cc}
+}
+
+func (c *userInfoClient) GetUserInfo(ctx context.Context, in *GetUserInfoRequest, opts ...grpc.CallOption) (*GetUserInfoResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetUserInfoResponse)
+	err := c.cc.Invoke(ctx, UserInfo_GetUserInfo_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userInfoClient) UpdateUserInfo(ctx context.Context, in *UpdateUserInfoRequest, opts ...grpc.CallOption) (*UpdateUserInfoResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateUserInfoResponse)
+	err := c.cc.Invoke(ctx, UserInfo_UpdateUserInfo_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userInfoClient) DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*DeleteUserResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteUserResponse)
+	err := c.cc.Invoke(ctx, UserInfo_DeleteUser_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// UserInfoServer is the server API for UserInfo service.
+// All implementations must embed UnimplementedUserInfoServer
+// for forward compatibility.
+type UserInfoServer interface {
+	// GetUserInfo возвращает информацию о пользователе.
+	GetUserInfo(context.Context, *GetUserInfoRequest) (*GetUserInfoResponse, error)
+	// UpdateUserInfo обновляет информацию о пользователе.
+	UpdateUserInfo(context.Context, *UpdateUserInfoRequest) (*UpdateUserInfoResponse, error)
+	// DeleteUser удаляет аккаунт пользователя.
+	DeleteUser(context.Context, *DeleteUserRequest) (*DeleteUserResponse, error)
+	mustEmbedUnimplementedUserInfoServer()
+}
+
+// UnimplementedUserInfoServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedUserInfoServer struct{}
+
+func (UnimplementedUserInfoServer) GetUserInfo(context.Context, *GetUserInfoRequest) (*GetUserInfoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserInfo not implemented")
+}
+func (UnimplementedUserInfoServer) UpdateUserInfo(context.Context, *UpdateUserInfoRequest) (*UpdateUserInfoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserInfo not implemented")
+}
+func (UnimplementedUserInfoServer) DeleteUser(context.Context, *DeleteUserRequest) (*DeleteUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteUser not implemented")
+}
+func (UnimplementedUserInfoServer) mustEmbedUnimplementedUserInfoServer() {}
+func (UnimplementedUserInfoServer) testEmbeddedByValue()                  {}
+
+// UnsafeUserInfoServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to UserInfoServer will
+// result in compilation errors.
+type UnsafeUserInfoServer interface {
+	mustEmbedUnimplementedUserInfoServer()
+}
+
+func RegisterUserInfoServer(s grpc.ServiceRegistrar, srv UserInfoServer) {
+	// If the following call pancis, it indicates UnimplementedUserInfoServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&UserInfo_ServiceDesc, srv)
+}
+
+func _UserInfo_GetUserInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserInfoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserInfoServer).GetUserInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserInfo_GetUserInfo_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserInfoServer).GetUserInfo(ctx, req.(*GetUserInfoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserInfo_UpdateUserInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateUserInfoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserInfoServer).UpdateUserInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserInfo_UpdateUserInfo_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserInfoServer).UpdateUserInfo(ctx, req.(*UpdateUserInfoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserInfo_DeleteUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserInfoServer).DeleteUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserInfo_DeleteUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserInfoServer).DeleteUser(ctx, req.(*DeleteUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// UserInfo_ServiceDesc is the grpc.ServiceDesc for UserInfo service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var UserInfo_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "auth.UserInfo",
+	HandlerType: (*UserInfoServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "GetUserInfo",
+			Handler:    _UserInfo_GetUserInfo_Handler,
+		},
+		{
+			MethodName: "UpdateUserInfo",
+			Handler:    _UserInfo_UpdateUserInfo_Handler,
+		},
+		{
+			MethodName: "DeleteUser",
+			Handler:    _UserInfo_DeleteUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
